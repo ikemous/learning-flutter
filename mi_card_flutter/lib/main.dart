@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
               ),
               Container(
                 constraints: BoxConstraints(maxWidth: 600.0),
-                margin: EdgeInsets.fromLTRB(10.0, 15.0, 25.0, 10.0),
+                margin: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 10.0),
                 padding: EdgeInsets.all(20.0),
                 color: Colors.white,
                 child: Row(
@@ -66,6 +66,7 @@ class MyApp extends StatelessWidget {
                         child: Icon(
                           Icons.phone,
                           semanticLabel: "Phone Icon",
+                          size: 30.0,
                         ),
                       ),
                       const Text(
@@ -75,7 +76,7 @@ class MyApp extends StatelessWidget {
               ),
               Container(
                 constraints: BoxConstraints(maxWidth: 600.0),
-                margin: EdgeInsets.fromLTRB(10.0, 1.0, 25.0, 10.0),
+                margin: EdgeInsets.fromLTRB(20.0, 1.0, 20.0, 10.0),
                 padding: EdgeInsets.all(20.0),
                 color: Colors.white,
                 child: Row(children: [
@@ -84,6 +85,7 @@ class MyApp extends StatelessWidget {
                     child: Icon(
                       Icons.email,
                       semanticLabel: "Email Icon",
+                      size: 30.0,
                     ),
                   ),
                   const Text("example@email.com"),
