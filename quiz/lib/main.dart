@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:quiz/quiz_brain.dart';
+
+QuizBrain quizBrain = QuizBrain();
 
 void main() => runApp(const QuizApp());
 
@@ -41,20 +45,41 @@ class _QuizPageState extends State<QuizPage> {
   );
   List<Icon> scoreKeeper = [checkIcon, closeIcon];
 
+  void handleAnswer(bool userResponse) {
+    if (quizBrain.isFinished()) {
+      Alert(
+        context: context,
+        title: 'Finished!',
+        desc: 'The quiz is completed!',
+      ).show();
+      quizBrain.reset();
+      return setState(() {
+        scoreKeeper = [];
+      });
+    }
+    bool questionAnswer = quizBrain.getQuestionAnswer();
+    Icon responseIcon = userResponse == questionAnswer ? checkIcon : closeIcon;
+
+    quizBrain.nextQuestion();
+    setState(() {
+      scoreKeeper.add(responseIcon);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Expanded(
+        Expanded(
           flex: 5,
           child: Padding(
-            padding: EdgeInsets.all(10.0),
+            padding: const EdgeInsets.all(10.0),
             child: Center(
               child: Text(
-                "Quiz Content",
-                style: TextStyle(color: Colors.white, fontSize: 25.0),
+                quizBrain.getQuestionText(),
+                style: const TextStyle(color: Colors.white, fontSize: 25.0),
               ),
             ),
           ),
@@ -73,11 +98,7 @@ class _QuizPageState extends State<QuizPage> {
                   fontSize: 20.0,
                 ),
               ),
-              onPressed: () {
-                setState(() {
-                  scoreKeeper.add(checkIcon);
-                });
-              },
+              onPressed: () => handleAnswer(true),
             ),
           ),
         ),
@@ -87,19 +108,16 @@ class _QuizPageState extends State<QuizPage> {
             child: TextButton(
               style: TextButton.styleFrom(backgroundColor: Colors.red),
               child: const Text(
-                "false",
+                "False",
                 style: TextStyle(color: Colors.white, fontSize: 20.0),
               ),
-              onPressed: () => setState(() {
-                scoreKeeper.add(closeIcon);
-              }),
+              onPressed: () => handleAnswer(false),
             ),
           ),
         ),
         Row(
           children: scoreKeeper,
         ),
-        // TODO: OTHER STUFF
       ],
     );
   }
