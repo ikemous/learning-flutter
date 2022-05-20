@@ -1,22 +1,21 @@
-import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat_app/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+
+final _db = FirebaseFirestore.instance;
+User? loggedInUser;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
   static const String id = 'chat';
-
   @override
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  final _db = FirebaseFirestore.instance;
+  final _messageTextController = TextEditingController();
   final _auth = FirebaseAuth.instance;
-  User? loggedInUser;
   String? messageText;
 
   void getCurrentUser() async {
@@ -30,72 +29,9 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  void getMessages() async {
-    // final cities = _db.collection("cities");
-    // final data1 = <String, dynamic>{
-    //   "name": "San Francisco",
-    //   "state": "CA",
-    //   "country": "USA",
-    //   "capital": false,
-    //   "population": 860000,
-    //   "regions": ["west_coast", "norcal"]
-    // };
-    // cities.doc("SF").set(data1);
-
-    // final data2 = <String, dynamic>{
-    //   "name": "Los Angeles",
-    //   "state": "CA",
-    //   "country": "USA",
-    //   "capital": false,
-    //   "population": 3900000,
-    //   "regions": ["west_coast", "socal"],
-    // };
-    // cities.doc("LA").set(data2);
-
-    // final data3 = <String, dynamic>{
-    //   "name": "Washington D.C.",
-    //   "state": null,
-    //   "country": "USA",
-    //   "capital": true,
-    //   "population": 680000,
-    //   "regions": ["east_coast"]
-    // };
-    // cities.doc("DC").set(data3);
-
-    // final data4 = <String, dynamic>{
-    //   "name": "Tokyo",
-    //   "state": null,
-    //   "country": "Japan",
-    //   "capital": true,
-    //   "population": 9000000,
-    //   "regions": ["kanto", "honshu"]
-    // };
-    // cities.doc("TOK").set(data4);
-
-    // final data5 = <String, dynamic>{
-    //   "name": "Beijing",
-    //   "state": null,
-    //   "country": "China",
-    //   "capital": true,
-    //   "population": 21500000,
-    //   "regions": ["jingjinji", "hebei"],
-    // };
-    // cities.doc("BJ").set(data5);
-    final docRef = _db.collection("cities").doc("SF");
-    docRef.get().then(
-      (DocumentSnapshot doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        // ...
-      },
-      onError: (e) => print("Error getting document: $e"),
-    );
-    print("TEst");
-  }
-
   @override
   void initState() {
     getCurrentUser();
-    getMessages();
     super.initState();
   }
 
@@ -121,6 +57,7 @@ class _ChatScreenState extends State<ChatScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const MessagesStream(),
             Container(
               decoration: kMessageContainerDecoration,
               child: Row(
@@ -128,15 +65,22 @@ class _ChatScreenState extends State<ChatScreen> {
                 children: [
                   Expanded(
                     child: TextField(
+                      controller: _messageTextController,
                       onChanged: (value) {
                         messageText = value;
-                        //Do something with the user input.
                       },
                       decoration: kMessageTextFieldDecoration,
                     ),
                   ),
                   TextButton(
-                    onPressed: getMessages,
+                    onPressed: () {
+                      _messageTextController.clear();
+                      final data = {
+                        'text': messageText,
+                        'sender': loggedInUser?.email,
+                      };
+                      _db.collection('messages').add(data);
+                    },
                     child: const Text(
                       'Send',
                       style: kSendButtonTextStyle,
@@ -147,6 +91,112 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class MessagesStream extends StatelessWidget {
+  const MessagesStream({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _db.collection('messages').snapshots(),
+      builder: ((context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.active:
+            if (snapshot.hasData) {
+              final messages = snapshot.data?.docs.reversed;
+              List<MessageBubble> messageWidgets = [];
+              for (var message in messages!) {
+                final text = message.get('text');
+                final sender = message.get('sender');
+
+                final messageWidget = MessageBubble(
+                  text: text,
+                  sender: sender,
+                  isMe: sender == loggedInUser?.email,
+                );
+                messageWidgets.add(messageWidget);
+              }
+              return Expanded(
+                child: ListView(
+                  reverse: true,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10.0,
+                    vertical: 20.0,
+                  ),
+                  children: messageWidgets,
+                ),
+              );
+            }
+            return Column(
+              children: const [
+                Text("No messages sent"),
+              ],
+            );
+          default:
+            return const Text("Loading...");
+        }
+      }),
+    );
+  }
+}
+
+class MessageBubble extends StatelessWidget {
+  const MessageBubble({
+    super.key,
+    required this.text,
+    required this.sender,
+    required this.isMe,
+  });
+  final String text;
+  final String sender;
+  final bool isMe;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: Column(
+        crossAxisAlignment:
+            isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+        children: [
+          Material(
+            borderRadius: isMe
+                ? const BorderRadius.only(
+                    topRight: Radius.circular(30.0),
+                    topLeft: Radius.circular(30.0),
+                    bottomRight: Radius.circular(30.0),
+                  )
+                : const BorderRadius.only(
+                    topRight: Radius.circular(30.0),
+                    topLeft: Radius.circular(30.0),
+                    bottomLeft: Radius.circular(30.0),
+                  ),
+            elevation: 5.0,
+            color: isMe ? Colors.white : Colors.lightBlueAccent,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+              child: Text(
+                text,
+                style: TextStyle(
+                  fontSize: 15.0,
+                  color: isMe ? Colors.black54 : Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Text(
+            sender,
+            style: const TextStyle(
+              fontSize: 12.0,
+              color: Colors.black45,
+            ),
+          ),
+        ],
       ),
     );
   }
