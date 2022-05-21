@@ -36,59 +36,71 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     return Scaffold(
       // backgroundColor: Colors.white,
       backgroundColor: animation.value,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Hero(
-                  tag: 'logo',
-                  child: Container(
-                    height: 60,
-                    child: Image.asset('images/logo.png'),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            // crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Hero(
+                    tag: 'logo',
+                    child: Container(
+                      height: 60,
+                      child: Image.asset('images/logo.png'),
+                    ),
                   ),
-                ),
-                AnimatedTextKit(
-                  animatedTexts: [
-                    TypewriterAnimatedText(
-                      "Flash Chat",
-                      textStyle: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                  AnimatedTextKit(
+                    animatedTexts: [
+                      TypewriterAnimatedText(
+                        "Flash Chat",
+                        textStyle: const TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        speed: const Duration(milliseconds: 200),
                       ),
-                      speed: const Duration(milliseconds: 200),
+                    ],
+                    isRepeatingAnimation: true,
+                    repeatForever: true,
+                  ),
+                  // const Text("Flash Chat"),
+                ],
+              ),
+              const SizedBox(
+                height: 48.0,
+              ),
+              Container(
+                constraints: const BoxConstraints(
+                  maxWidth: 550.0,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    RoundedButton(
+                      buttonColor: Colors.lightBlueAccent,
+                      onPressed: () {
+                        //Go to login screen.
+                        Navigator.pushNamed(context, LoginScreen.id);
+                      },
+                      buttonText: 'Log In',
+                    ),
+                    RoundedButton(
+                      onPressed: () {
+                        //Go to registration screen.
+                        Navigator.pushNamed(context, RegistrationScreen.id);
+                      },
+                      buttonText: 'Register',
+                      buttonColor: Colors.blueAccent,
                     ),
                   ],
-                  isRepeatingAnimation: true,
-                  repeatForever: true,
                 ),
-                // const Text("Flash Chat"),
-              ],
-            ),
-            const SizedBox(
-              height: 48.0,
-            ),
-            RoundedButton(
-              buttonColor: Colors.lightBlueAccent,
-              onPressed: () {
-                //Go to login screen.
-                Navigator.pushNamed(context, LoginScreen.id);
-              },
-              buttonText: 'Log In',
-            ),
-            RoundedButton(
-              onPressed: () {
-                //Go to registration screen.
-                Navigator.pushNamed(context, RegistrationScreen.id);
-              },
-              buttonText: 'Register',
-              buttonColor: Colors.blueAccent,
-            )
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );

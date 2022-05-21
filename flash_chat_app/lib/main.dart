@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flash_chat_app/screens/chat_screen.dart';
 import 'package:flash_chat_app/screens/login_screen.dart';
 import 'package:flash_chat_app/screens/registration_screen.dart';
 import 'package:flash_chat_app/screens/welcome_screen.dart';
-import 'package:flash_chat_app/secrets.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
 

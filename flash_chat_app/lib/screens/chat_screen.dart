@@ -1,13 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat_app/screens/login_screen.dart';
+import 'package:flash_chat_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat_app/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/scheduler.dart';
 
 final _db = FirebaseFirestore.instance;
 User? loggedInUser;
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  const ChatScreen({Key? key}) : super(key: key);
   static const String id = 'chat';
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -78,6 +81,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       final data = {
                         'text': messageText,
                         'sender': loggedInUser?.email,
+                        'sent': Timestamp.now(),
                       };
                       _db.collection('messages').add(data);
                     },
@@ -97,12 +101,12 @@ class _ChatScreenState extends State<ChatScreen> {
 }
 
 class MessagesStream extends StatelessWidget {
-  const MessagesStream({super.key});
+  const MessagesStream({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _db.collection('messages').snapshots(),
+      stream: _db.collection('messages').orderBy('sent').snapshots(),
       builder: ((context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.active:
