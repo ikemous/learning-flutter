@@ -10,6 +10,37 @@ class FirebaseServices {
     );
   }
 
+  Future<User?> register({
+    required String email,
+    required String password,
+  }) async {
+    UserCredential? userCredential;
+    try {
+      userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (userCredential.user != null) {
+        return userCredential.user;
+      }
+      throw UserNotLoggedInException();
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "email-already-in-use":
+          throw EmailAddressTakenException();
+        case "weak-password":
+          throw WeakPasswordExpection();
+        case "invalid-email":
+          throw InvalidEmailException();
+        default:
+          throw GenericAuthException();
+      }
+    } catch (_) {
+      throw GenericAuthException();
+    }
+  }
+
   Future<User?> logIn({
     required String email,
     required String password,
