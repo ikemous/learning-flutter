@@ -6,7 +6,6 @@ import 'package:flash_chat_app/utilities/exceptions.dart';
 import 'package:flash_chat_app/screens/chat_screen.dart';
 import 'package:flash_chat_app/screens/registration_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,7 +17,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   FirebaseServices authService = FirebaseServices();
-  bool isSpinning = false;
+  bool isLoggingIn = false;
   bool isValid = true;
   String errorMessage = "";
   String email = "";
@@ -26,7 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void handleLogIn() async {
     setState(() {
-      isSpinning = true;
+      isLoggingIn = true;
     });
     try {
       final User? user =
@@ -36,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
           email = "";
           password = "";
           isValid = true;
-          isSpinning = false;
+          isLoggingIn = false;
         });
         Navigator.pushNamed(context, ChatScreen.id);
       }
@@ -44,11 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         errorMessage = "Email/Password Invalid";
         isValid = false;
-        isSpinning = false;
+        isLoggingIn = false;
       });
     } catch (_) {
+      print(_);
       setState(() {
-        isSpinning = false;
+        isLoggingIn = false;
       });
     }
   }
@@ -57,101 +57,98 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: ModalProgressHUD(
-        inAsyncCall: isSpinning,
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Hero(
-                    tag: 'logo',
-                    child: Container(
-                      height: 200.0,
-                      child: Image.asset('images/logo.png'),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Hero(
+                  tag: 'logo',
+                  child: SizedBox(
+                    height: 200.0,
+                    child: Image.asset('images/logo.png'),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 48.0,
+              ),
+              Container(
+                constraints: const BoxConstraints(maxWidth: 450.0),
+                child: Column(
+                  children: [
+                    TextField(
+                      keyboardType: TextInputType.emailAddress,
+                      textAlign: TextAlign.center,
+                      enabled: !isLoggingIn,
+                      onChanged: (value) {
+                        email = value;
+                      },
+                      decoration: kFieldDecoration.copyWith(
+                        hintText: "Enter Your Email.",
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: isValid
+                              ? const BorderSide(
+                                  color: Colors.lightBlueAccent, width: 1.0)
+                              : const BorderSide(color: Colors.red, width: 1.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(32.0)),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(
-                  height: 48.0,
-                ),
-                Container(
-                  constraints: const BoxConstraints(maxWidth: 450.0),
-                  child: Column(
-                    children: [
-                      TextField(
-                        keyboardType: TextInputType.emailAddress,
-                        textAlign: TextAlign.center,
-                        onChanged: (value) {
-                          email = value;
-                        },
-                        decoration: kFieldDecoration.copyWith(
-                          hintText: "Enter Your Email.",
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: isValid
-                                ? const BorderSide(
-                                    color: Colors.lightBlueAccent, width: 1.0)
-                                : const BorderSide(
-                                    color: Colors.red, width: 1.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(32.0)),
-                          ),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    TextField(
+                      obscureText: true,
+                      textAlign: TextAlign.center,
+                      enabled: !isLoggingIn,
+                      onChanged: (value) {
+                        password = value;
+                      },
+                      decoration: kFieldDecoration.copyWith(
+                        hintText: "Enter Your Password.",
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: isValid
+                              ? const BorderSide(
+                                  color: Colors.lightBlueAccent, width: 1.0)
+                              : const BorderSide(color: Colors.red, width: 1.0),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(32.0)),
                         ),
                       ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      TextField(
-                        obscureText: true,
-                        textAlign: TextAlign.center,
-                        onChanged: (value) {
-                          password = value;
-                        },
-                        decoration: kFieldDecoration.copyWith(
-                          hintText: "Enter Your Password.",
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: isValid
-                                ? const BorderSide(
-                                    color: Colors.lightBlueAccent, width: 1.0)
-                                : const BorderSide(
-                                    color: Colors.red, width: 1.0),
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(32.0)),
-                          ),
-                        ),
-                      ),
-                      !isValid
-                          ? Text(
-                              textAlign: TextAlign.left,
-                              errorMessage,
-                              style: const TextStyle(
-                                color: Colors.red,
-                              ),
-                            )
-                          : const SizedBox(
-                              height: 24.0,
+                    ),
+                    !isValid
+                        ? Text(
+                            textAlign: TextAlign.left,
+                            errorMessage,
+                            style: const TextStyle(
+                              color: Colors.red,
                             ),
-                      RoundedButton(
-                        buttonText: "Log In",
-                        buttonColor: Colors.lightBlueAccent,
-                        onPressed: handleLogIn,
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            RegistrationScreen.id,
-                          );
-                        },
-                        child: const Text("Register For Account Here"),
-                      ),
-                    ],
-                  ),
+                          )
+                        : const SizedBox(
+                            height: 24.0,
+                          ),
+                    RoundedButton(
+                      buttonText: "Log In",
+                      buttonColor: Colors.lightBlueAccent,
+                      onPressed: handleLogIn,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          RegistrationScreen.id,
+                        );
+                      },
+                      child: const Text("Register For Account Here"),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
