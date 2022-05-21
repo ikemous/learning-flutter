@@ -17,7 +17,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  AuthServices authService = AuthServices();
+  FirebaseServices authService = FirebaseServices();
   bool isSpinning = false;
   bool isValid = true;
   String errorMessage = "";

@@ -1,8 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flash_chat_app/firebase_options.dart';
 import 'package:flash_chat_app/utilities/exceptions.dart';
 
-class AuthServices {
-  final _auth = FirebaseAuth.instance;
+class FirebaseServices {
+  Future<void> initializeApp() async {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
   Future<User?> logIn({
     required String email,
@@ -10,8 +16,10 @@ class AuthServices {
   }) async {
     UserCredential? currentUser;
     try {
-      currentUser = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+      currentUser = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       if (currentUser.user != null) {
         return currentUser.user;
       }
