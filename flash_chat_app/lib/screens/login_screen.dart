@@ -37,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
           isValid = true;
           isLoggingIn = false;
         });
+        // ignore: use_build_context_synchronously
         Navigator.pushNamed(context, ChatScreen.id);
       }
     } on InvalidLoginException catch (_) {
@@ -46,7 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
         isLoggingIn = false;
       });
     } catch (_) {
-      print(_);
       setState(() {
         isLoggingIn = false;
       });

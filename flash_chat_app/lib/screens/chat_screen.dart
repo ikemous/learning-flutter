@@ -1,10 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flash_chat_app/screens/login_screen.dart';
-import 'package:flash_chat_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat_app/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/scheduler.dart';
 
 final _db = FirebaseFirestore.instance;
 User? loggedInUser;
@@ -28,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
         loggedInUser = user;
       }
     } catch (e) {
-      print(e);
+      // print(e);
     }
   }
 
