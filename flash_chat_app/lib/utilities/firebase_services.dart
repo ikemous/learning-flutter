@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flash_chat_app/firebase_options.dart';
@@ -9,6 +10,19 @@ class FirebaseServices {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getSnapshotsByDate() {
+    return FirebaseFirestore.instance
+        .collection('messages')
+        .orderBy('sent')
+        .snapshots();
+  }
+
+  Future<void> addMessage(Map<String, dynamic> data) async {
+    await FirebaseFirestore.instance.collection('messages').add(data);
+  }
+
+  User? getCurrentUser() => FirebaseAuth.instance.currentUser;
 
   Future<User?> register({
     required String email,

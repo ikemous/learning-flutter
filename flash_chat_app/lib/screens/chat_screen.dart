@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_chat_app/utilities/firebase_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flash_chat_app/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-final _db = FirebaseFirestore.instance;
+final firebaseServices = FirebaseServices();
 User? loggedInUser;
 
 class ChatScreen extends StatefulWidget {
@@ -20,13 +21,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
   void getCurrentUser() async {
     try {
-      User? user = _auth.currentUser;
+      User? user = firebaseServices.getCurrentUser();
       if (user != null) {
         loggedInUser = user;
       }
-    } catch (e) {
-      // print(e);
-    }
+    } catch (e) {}
   }
 
   @override
@@ -80,7 +79,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         'sender': loggedInUser?.email,
                         'sent': Timestamp.now(),
                       };
-                      _db.collection('messages').add(data);
+                      firebaseServices.addMessage(data);
                     },
                     child: const Text(
                       'Send',
@@ -103,7 +102,7 @@ class MessagesStream extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: _db.collection('messages').orderBy('sent').snapshots(),
+      stream: firebaseServices.getSnapshotsByDate(),
       builder: ((context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.active:
