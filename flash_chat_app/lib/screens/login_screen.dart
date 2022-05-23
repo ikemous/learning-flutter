@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_chat_app/components/rounded_button.dart';
 import 'package:flash_chat_app/constants.dart';
-import 'package:flash_chat_app/utilities/auth_services.dart';
+import 'package:flash_chat_app/screens/forgot_password_screen.dart';
+import 'package:flash_chat_app/utilities/firebase_services.dart';
 import 'package:flash_chat_app/utilities/exceptions.dart';
 import 'package:flash_chat_app/screens/chat_screen.dart';
 import 'package:flash_chat_app/screens/registration_screen.dart';
@@ -135,6 +136,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       buttonText: "Log In",
                       buttonColor: Colors.lightBlueAccent,
                       onPressed: handleLogIn,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          ForgotPasswordScreen.id,
+                        );
+                      },
+                      child: const Text("Forgot Password?"),
                     ),
                     TextButton(
                       onPressed: () {

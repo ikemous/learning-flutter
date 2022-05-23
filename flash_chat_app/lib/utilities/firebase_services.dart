@@ -68,4 +68,19 @@ class FirebaseServices {
       throw GenericAuthException();
     }
   }
+
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "invalid-email":
+          throw InvalidEmailException();
+        default:
+          throw GenericAuthException();
+      }
+    } catch (e) {
+      throw GenericAuthException();
+    }
+  }
 }

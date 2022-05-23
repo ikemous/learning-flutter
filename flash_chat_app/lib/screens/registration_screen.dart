@@ -3,7 +3,7 @@ import 'package:flash_chat_app/components/rounded_button.dart';
 import 'package:flash_chat_app/constants.dart';
 import 'package:flash_chat_app/screens/chat_screen.dart';
 import 'package:flash_chat_app/screens/login_screen.dart';
-import 'package:flash_chat_app/utilities/auth_services.dart';
+import 'package:flash_chat_app/utilities/firebase_services.dart';
 import 'package:flash_chat_app/utilities/exceptions.dart';
 
 class RegistrationScreen extends StatefulWidget {

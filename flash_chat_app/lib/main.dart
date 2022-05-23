@@ -1,8 +1,9 @@
 import 'package:flash_chat_app/screens/chat_screen.dart';
+import 'package:flash_chat_app/screens/forgot_password_screen.dart';
 import 'package:flash_chat_app/screens/login_screen.dart';
 import 'package:flash_chat_app/screens/registration_screen.dart';
 import 'package:flash_chat_app/screens/welcome_screen.dart';
-import 'package:flash_chat_app/utilities/auth_services.dart';
+import 'package:flash_chat_app/utilities/firebase_services.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {
@@ -23,6 +24,7 @@ class FlashChat extends StatelessWidget {
         LoginScreen.id: (context) => const LoginScreen(),
         RegistrationScreen.id: (context) => const RegistrationScreen(),
         ChatScreen.id: (context) => const ChatScreen(),
+        ForgotPasswordScreen.id: (context) => const ForgotPasswordScreen(),
       },
     );
   }
