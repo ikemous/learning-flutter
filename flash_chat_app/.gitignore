@@ -47,3 +47,7 @@ app.*.map.json
 /android/app/release
 
 lib/secrets.dart
+
+# Firebase push file
+public
+.firebase
